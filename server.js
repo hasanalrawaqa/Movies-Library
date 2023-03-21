@@ -3,7 +3,7 @@ const app = express()
 const port = 3000
 const data= require("./movie data/data.json")
 app.use("*", handleNtFoundError)
-app.use("*", handleServerErr)
+app.use("*", handleServerError)
 function Movie(title,poster_path,overview){
 this.title=title;
 this.poster_path=poster_path;
@@ -23,7 +23,7 @@ app.get('/favorite', (req, res) => {
 function handleNtFoundError(req, res){
   res.status(404).send("not found")
 }
-function handleServerErr(req, res){
+function handleServerError(err, req, res, next){
   res.status(500).send('Internal Server Error');
 }
 
