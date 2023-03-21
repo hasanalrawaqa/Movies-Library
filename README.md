@@ -30,3 +30,8 @@ app.listen(port, () => {
 ## Project Features
  - the project has home page: (./) with response show information for movie title and poster_path and overview.
  - the project has a favorite page : (/favorite) with response show massage: Welcome to Favorite Page
+
+ ## lab12:
+ - add trending route to site using 3rd party API
+ - add search route to site using 3rd party API
+ - using cors() and dotnev
