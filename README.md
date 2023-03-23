@@ -3,7 +3,7 @@
 
 **Author Name**: Hasan Alrawaqa
 
-## WRRC
+### WRRC
 ![Alt text](WRRC.PNG)
 
 ## Overview:
@@ -34,4 +34,15 @@ app.listen(port, () => {
  ## lab12:
  - add trending route to site using 3rd party API
  - add search route to site using 3rd party API
- - using cors() and dotnev
+ - using cors() and 
+ ### WRRC FOR API
+ ![Alt text](WRRC%20API.png)
+
+ ## lab 13:
+ - bulid database
+ - add addMovie route to website 
+ - link website to database
+ - add getMovies route to website
+ - make the client able to add movie to website
+  ### WRRC FOR API AND DB
+![Alt text](WRRC%20API%20AND%20DB.png)

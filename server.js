@@ -3,8 +3,17 @@ const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT
+const username=process.env.username
+const password=process.env.password
+const bodyParser = require('body-parser')
+const { Client } = require('pg')
+let url = `postgres://${username}:${password}@localhost:5432/MoviesLibrary`;
+// I put my sudo username and password in .env file
+const client = new Client(url)
 const app = express();
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
 const apiKey =process.env.API_KEY;
 
 function Movie(title,poster_path,overview){
@@ -13,7 +22,34 @@ function Movie(title,poster_path,overview){
   this.overview=overview;
   }
   const data= require("./movie data/data.json")
-  
+  app.post('/addMovie',addMovies);
+app.get('/getMovies',getAllMovies);
+function addMovies(req,res){
+   
+  let {id,title,release_date,poster_path,overview} = req.body;
+  // client.query(sql,values)
+  let sql = `INSERT INTO Movies (id,title,release_date, poster_path,overview)
+  VALUES ($1,$2,$3,$4,$5) RETURNING *; `
+  let values = [id,title,release_date,poster_path,overview]
+  client.query(sql,values).then((result)=>{
+      res.status(201).json(result.rows)
+
+  }
+
+  ).catch((err)=>{
+      errorHandler(err,req,res);
+  })
+
+}
+
+function getAllMovies(req,res) {
+  let sql =`SELECT * FROM Movies;`; 
+  client.query(sql).then((result)=>{
+      res.json(result.rows)
+  }).catch((err)=>{
+      errorHandler(err,req,res)
+  })
+}
   app.get('/', movieData )
   function movieData(req,res){
       let result=[];
@@ -121,7 +157,8 @@ app.get('/person/popular', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(port, () => {
+client.connect().then(()=>{
+  app.listen(port, () => {
     console.log(`listening on port ${port}`)
   })
+}).catch()
