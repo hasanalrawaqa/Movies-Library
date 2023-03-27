@@ -6,3 +6,4 @@ CREATE TABLE Movies (
     overview VARCHAR(255)
    
 );
+

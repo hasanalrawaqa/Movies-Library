@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
-const port = process.env.PORT
+const port = 3002
 const username=process.env.username
 const password=process.env.password
 const bodyParser = require('body-parser')
@@ -24,6 +24,10 @@ function Movie(title,poster_path,overview){
   const data= require("./movie data/data.json")
   app.post('/addMovie',addMovies);
 app.get('/getMovies',getAllMovies);
+app.put('/UPDATE/:id', movieUpdate)//params
+app.delete('/DELETE/:id', movieDelete) 
+
+
 function addMovies(req,res){
    
   let {id,title,release_date,poster_path,overview} = req.body;
@@ -156,6 +160,27 @@ app.get('/person/popular', async (req, res) => {
     res.status(500).send('Internal server error');
   }
 });
+function  movieUpdate(req,res){
+  let movieId = req.params.id 
+  let {id,title,release_date,poster_path,overview} = req.body;
+  let sql=`UPDATE Movies SET id= $1 title = $2 , release_date= $3 , poster_path= $4 , overview= $5
+  WHERE id = $6 RETURNING *;`;
+  let values = [id,title,release_date,poster_path,overview, movieId];
+  client.query(sql,values).then(result=>{
+      console.log(result.rows);
+      res.send(result.rows)
+  }).catch()
+
+}
+
+function movieDelete(req,res){
+  let {id} = req.params; 
+  let sql=`DELETE FROM Movies WHERE id = $1;` ;
+  let value = [id];
+  client.query(sql,value).then(result=>{
+      res.status(204).send("deleted");
+  }).catch()
+}
 
 client.connect().then(()=>{
   app.listen(port, () => {

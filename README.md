@@ -46,3 +46,7 @@ app.listen(port, () => {
  - make the client able to add movie to website
   ### WRRC FOR API AND DB
 ![Alt text](WRRC%20API%20AND%20DB.png)
+
+## lab 14: 
+- add update route for movies to update a movie information
+- add delete route to delete movie from data base
