@@ -1,3 +1,4 @@
+\c movie_data_base
 CREATE TABLE Movies (
     id INT PRIMARY KEY,
     title VARCHAR(255),
