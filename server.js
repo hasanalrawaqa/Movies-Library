@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
-const port = 3002
+const port = 3006
 const username=process.env.username
 const password=process.env.password
 const bodyParser = require('body-parser')
@@ -36,12 +36,14 @@ function addMovies(req,res){
   VALUES ($1,$2,$3,$4,$5) RETURNING *; `
   let values = [id,title,release_date,poster_path,overview]
   client.query(sql,values).then((result)=>{
+    console.log("add movie")
       res.status(201).json(result.rows)
+      console.log(result.rows)
 
   }
 
   ).catch((err)=>{
-      errorHandler(err,req,res);
+//errorHandler(err,req,res);
   })
 
 }
@@ -115,16 +117,17 @@ app.use("*", handleNtFoundError)
 app.use(handleInternalServerError);
 
 // Endpoint for getting movie details by ID
-app.get('/movie/:id', async (req, res) => {
+app.get('/getMovie/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`);
-    const movieData = response.data;
-    const { title, release_date, poster_path, overview, runtime, genres } = movieData;
-    res.send({ id, title, release_date, poster_path, overview, runtime, genres });
+    const movieId = req.params.id;
+    const results = await connection.promise().query('SELECT * FROM movies WHERE id = ?', [movieId]);
+    if (results[0]) {
+      res.send(results[0]);
+    } else {
+      res.status(404).send('Movie not found');
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal server error');
+    res.status(500).send(error);
   }
 });
 
@@ -169,8 +172,10 @@ function  movieUpdate(req,res){
   client.query(sql,values).then(result=>{
       console.log(result.rows);
       res.send(result.rows)
-  }).catch()
-
+  }).catch(error => {
+    console.log(error);
+    res.status(500).json({ error: 'Something went wrong.' });
+  });
 }
 
 function movieDelete(req,res){
