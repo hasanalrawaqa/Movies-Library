@@ -43,7 +43,7 @@ function addMovies(req,res){
   }
 
   ).catch((err)=>{
-//errorHandler(err,req,res);
+    res.status(500).send('Internal server error');
   })
 
 }
@@ -53,7 +53,7 @@ function getAllMovies(req,res) {
   client.query(sql).then((result)=>{
       res.json(result.rows)
   }).catch((err)=>{
-     // errorHandler(err,req,res)
+    res.status(500).send('Internal server error');
   })
 }
   app.get('/', movieData )
@@ -113,8 +113,7 @@ function handleInternalServerError(err, req, res, next) {
  
   res.status(500).send('An internal server error has occurred.');
 }
-app.use("*", handleNtFoundError)
-app.use(handleInternalServerError);
+
 
 // Endpoint for getting movie details by ID
 app.get('/getMovie/:id',(req, res) => {
@@ -124,7 +123,7 @@ app.get('/getMovie/:id',(req, res) => {
   client.query(sql,value).then((result)=>{
     res.json(result.rows);
   }).catch((err)=>{
-    res.status(500).send(err);
+    res.status(500).send('Internal server error');
   })
   } 
 );
@@ -183,7 +182,10 @@ function movieDelete(req,res){
   client.query(sql,value).then(result=>{
       res.status(204).send("deleted");
   }).catch()
+  
 }
+app.use("*", handleNtFoundError)
+app.use(handleInternalServerError);
 
 client.connect().then(()=>{
   app.listen(port, () => {
