@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
-const apiKey =process.env.API_KEY;
+const API_KEY =process.env.API_KEY;
 
 function Movie(title,poster_path,overview){
   this.title=title;
@@ -53,7 +53,7 @@ function getAllMovies(req,res) {
   client.query(sql).then((result)=>{
       res.json(result.rows)
   }).catch((err)=>{
-      errorHandler(err,req,res)
+     // errorHandler(err,req,res)
   })
 }
   app.get('/', movieData )
@@ -117,25 +117,23 @@ app.use("*", handleNtFoundError)
 app.use(handleInternalServerError);
 
 // Endpoint for getting movie details by ID
-app.get('/getMovie/:id', async (req, res) => {
-  try {
-    const movieId = req.params.id;
-    const results = await connection.promise().query('SELECT * FROM movies WHERE id = ?', [movieId]);
-    if (results[0]) {
-      res.send(results[0]);
-    } else {
-      res.status(404).send('Movie not found');
-    }
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+app.get('/getMovie/:id',(req, res) => {
+  let id= req.params.id
+  let value=[id];
+  let sql=`SELECT * FROM Movies WHERE id = $1;`;
+  client.query(sql,value).then((result)=>{
+    res.json(result.rows);
+  }).catch((err)=>{
+    res.status(500).send(err);
+  })
+  } 
+);
 
 // Endpoint for getting similar movies by ID
 app.get('/movie/:id/similar', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}`);
+    const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${API_KEY}`);
     const movieData = response.data.results;
     const similarMovies = movieData.map(movie => {
       const { id, title, release_date, poster_path, overview } = movie;
@@ -151,7 +149,7 @@ app.get('/movie/:id/similar', async (req, res) => {
 // Endpoint for getting popular people
 app.get('/person/popular', async (req, res) => {
   try {
-    const response = await axios.get(`https://api.themoviedb.org/3/person/popular?api_key=${apiKey}`);
+    const response = await axios.get(`https://api.themoviedb.org/3/person/popular?api_key=${API_KEY}`);
     const personData = response.data.results;
     const popularPeople = personData.map(person => {
       const { id, name, profile_path, known_for_department } = person;
