@@ -26,7 +26,7 @@ function Movie(title,poster_path,overview){
 app.get('/getMovies',getAllMovies);
 app.put('/UPDATE/:id', movieUpdate)//params
 app.delete('/DELETE/:id', movieDelete) 
-
+app.get('/', movieData )
 
 function addMovies(req,res){
    
@@ -56,7 +56,7 @@ function getAllMovies(req,res) {
     res.status(500).send('Internal server error');
   })
 }
-  app.get('/', movieData )
+  
   function movieData(req,res){
       let result=[];
       const newMovie= new Movie(data.title,data.poster_path,data.overview)
@@ -123,6 +123,7 @@ app.get('/getMovie/:id',(req, res) => {
   client.query(sql,value).then((result)=>{
     res.json(result.rows);
   }).catch((err)=>{
+    console.log(err);
     res.status(500).send('Internal server error');
   })
   } 
@@ -181,7 +182,10 @@ function movieDelete(req,res){
   let value = [id];
   client.query(sql,value).then(result=>{
       res.status(204).send("deleted");
-  }).catch()
+  }).catch(error => {
+    console.log(error);
+    res.status(500).json({ error: 'Something went wrong.' });
+  });
   
 }
 app.use("*", handleNtFoundError)
