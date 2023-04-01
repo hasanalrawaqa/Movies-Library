@@ -21,7 +21,8 @@ function Movie(title,poster_path,overview){
   this.poster_path=poster_path;
   this.overview=overview;
   }
-  const data= require("./movie data/data.json")
+  const data= require("./movie data/data.json");
+const { error } = require('console');
   app.post('/addMovie',addMovies);
 app.get('/getMovies',getAllMovies);
 app.put('/UPDATE/:id', movieUpdate)//params
@@ -42,7 +43,7 @@ function addMovies(req,res){
 
   }
 
-  ).catch((err)=>{
+  ).catch((error)=>{
     res.status(500).send('Internal server error');
   })
 
@@ -52,7 +53,7 @@ function getAllMovies(req,res) {
   let sql =`SELECT * FROM Movies;`; 
   client.query(sql).then((result)=>{
       res.json(result.rows)
-  }).catch((err)=>{
+  }).catch((error)=>{
     res.status(500).send('Internal server error');
   })
 }
@@ -122,8 +123,8 @@ app.get('/getMovie/:id',(req, res) => {
   let sql=`SELECT * FROM Movies WHERE id = $1;`;
   client.query(sql,value).then((result)=>{
     res.json(result.rows);
-  }).catch((err)=>{
-    console.log(err);
+  }).catch((error)=>{
+    console.log(error);
     res.status(500).send('Internal server error');
   })
   } 
@@ -195,4 +196,6 @@ client.connect().then(()=>{
   app.listen(port, () => {
     console.log(`listening on port ${port}`)
   })
-}).catch()
+}).catch(error =>{
+  res.status(500).json({ error: 'Something went wrong.' });
+})
