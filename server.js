@@ -118,9 +118,10 @@ function handleInternalServerError(err, req, res, next) {
 
 // Endpoint for getting movie details by ID
 app.get('/getMovie/:id',(req, res) => {
-  let id= req.params.id
-  let value=[id];
+  let {id} = req.params;
   let sql=`SELECT * FROM Movies WHERE id = $1;`;
+  let value=[id];
+
   client.query(sql,value).then((result)=>{
     res.json(result.rows);
   }).catch((error)=>{
@@ -138,7 +139,6 @@ app.get('/movie/:id/similar', async (req, res) => {
     const movieData = response.data.results;
     const similarMovies = movieData.map(movie => {
       const { id, title, release_date, poster_path, overview } = movie;
-      return { id, title, release_date, poster_path, overview };
     });
     res.send(similarMovies);
   } catch (error) {
@@ -154,7 +154,6 @@ app.get('/person/popular', async (req, res) => {
     const personData = response.data.results;
     const popularPeople = personData.map(person => {
       const { id, name, profile_path, known_for_department } = person;
-      return { id, name, profile_path, known_for_department };
     });
     res.send(popularPeople);
   } catch (error) {
@@ -163,14 +162,13 @@ app.get('/person/popular', async (req, res) => {
   }
 });
 function  movieUpdate(req,res){
-  let movieId = req.params.id 
-  let {id,title,release_date,poster_path,overview} = req.body;
-  let sql=`UPDATE Movies SET id= $1 title = $2 , release_date= $3 , poster_path= $4 , overview= $5
-  WHERE id = $6 RETURNING *;`;
-  let values = [id,title,release_date,poster_path,overview, movieId];
+  let {id} = req.params;
+  let sql=`UPDATE Movies SET comments=$1 WHERE id=$2 RETURNING *;`;
+  let {comments}= req.body
+  let values = [ comments,id];
   client.query(sql,values).then(result=>{
       console.log(result.rows);
-      res.send(result.rows)
+      res.json(result.rows)
   }).catch(error => {
     console.log(error);
     res.status(500).json({ error: 'Something went wrong.' });
