@@ -200,5 +200,4 @@ client.connect().then(()=>{
     console.log(`listening on port ${port}`)
   })
 }).catch(error =>{
-  res.status(500).json({ error: 'Something went wrong.' });
 })
