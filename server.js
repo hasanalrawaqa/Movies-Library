@@ -132,37 +132,40 @@ app.get('/getMovie/:id',(req, res) => {
 );
 
 // Endpoint for getting similar movies by ID
-app.get('/movie/:id/similar', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${API_KEY}`);
-    const movieData = response.data.results;
-    const similarMovies = movieData.map(movie => {
-      const { id, title, release_date, poster_path, overview } = movie;
-      return { id, title, release_date, poster_path, overview };
+app.get('/movie/:id/similar', (req, res) => {
+  const { id } = req.params;
+  axios.get(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${API_KEY}`)
+    .then(response => {
+      const movieData = response.data.results;
+      const similarMovies = movieData.map(movie => {
+        const { id, title, release_date, poster_path, overview } = movie;
+        return { id, title, release_date, poster_path, overview };
+      });
+      res.send(similarMovies);
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Internal server error');
     });
-    res.send(similarMovies);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal server error');
-  }
 });
 
 // Endpoint for getting popular people
-app.get('/person/popular', async (req, res) => {
-  try {
-    const response = await axios.get(`https://api.themoviedb.org/3/person/popular?api_key=${API_KEY}`);
-    const personData = response.data.results;
-    const popularPeople = personData.map(person => {
-      const { id, name, profile_path, known_for_department } = person;
-      return { id, name, profile_path, known_for_department };
+app.get('/person/popular', (req, res) => {
+  axios.get(`https://api.themoviedb.org/3/person/popular?api_key=${API_KEY}`)
+    .then(response => {
+      const personData = response.data.results;
+      const popularPeople = personData.map(person => {
+        const { id, name, profile_path, known_for_department } = person;
+        return { id, name, profile_path, known_for_department };
+      });
+      res.send(popularPeople);
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Internal server error');
     });
-    res.send(popularPeople);
-  } catch (error) {
-    
-    res.status(500).send('Internal server error');
-  }
 });
+
 function  movieUpdate(req,res){
   let {id} = req.params;
   let sql=`UPDATE Movies SET comments=$1 WHERE id=$2 RETURNING *;`;
