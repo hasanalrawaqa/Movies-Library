@@ -1,10 +1,10 @@
 \c movie_data_base
 CREATE TABLE Movies (
     id INT PRIMARY KEY,
-    title VARCHAR(255),
+    title VARCHAR(350),
     release_date date,
-    poster_path VARCHAR(255),
-    overview VARCHAR(255)
+    poster_path VARCHAR(350),
+    overview VARCHAR(350)
    
 );
 

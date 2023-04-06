@@ -25,8 +25,8 @@ function Movie(title,poster_path,overview){
 const { error } = require('console');
   app.post('/addMovie',addMovies);
 app.get('/getMovies',getAllMovies);
-app.put('/UPDATE/:id', movieUpdate)//params
-app.delete('/DELETE/:id', movieDelete) 
+app.put('/update/:id', movieUpdate)//params
+app.delete('/delete/:id', movieDelete) 
 app.get('/', movieData )
 
 function addMovies(req,res){
@@ -118,9 +118,10 @@ function handleInternalServerError(err, req, res, next) {
 
 // Endpoint for getting movie details by ID
 app.get('/getMovie/:id',(req, res) => {
-  let id= req.params.id
-  let value=[id];
+  let {id} = req.params;
   let sql=`SELECT * FROM Movies WHERE id = $1;`;
+  let value=[id];
+
   client.query(sql,value).then((result)=>{
     res.json(result.rows);
   }).catch((error)=>{
@@ -158,19 +159,18 @@ app.get('/person/popular', async (req, res) => {
     });
     res.send(popularPeople);
   } catch (error) {
-    console.error(error);
+    
     res.status(500).send('Internal server error');
   }
 });
 function  movieUpdate(req,res){
-  let movieId = req.params.id 
-  let {id,title,release_date,poster_path,overview} = req.body;
-  let sql=`UPDATE Movies SET id= $1 title = $2 , release_date= $3 , poster_path= $4 , overview= $5
-  WHERE id = $6 RETURNING *;`;
-  let values = [id,title,release_date,poster_path,overview, movieId];
+  let {id} = req.params;
+  let sql=`UPDATE Movies SET comments=$1 WHERE id=$2 RETURNING *;`;
+  let {comments}= req.body
+  let values = [ comments,id];
   client.query(sql,values).then(result=>{
       console.log(result.rows);
-      res.send(result.rows)
+      res.json(result.rows)
   }).catch(error => {
     console.log(error);
     res.status(500).json({ error: 'Something went wrong.' });
@@ -197,5 +197,5 @@ client.connect().then(()=>{
     console.log(`listening on port ${port}`)
   })
 }).catch(error =>{
-  res.status(500).json({ error: 'Something went wrong.' });
+  
 })
