@@ -118,9 +118,9 @@ function handleInternalServerError(err, req, res, next) {
 
 // Endpoint for getting movie details by ID
 app.get('/getMovie/:id',(req, res) => {
-  let {id} = req.params;
-  let sql=`SELECT * FROM Movies WHERE id = $1;`;
-  let value=[id];
+ const {id} = req.params;
+  const sql=`SELECT * FROM Movies WHERE id = $1;`;
+  const value=[id];
 
   client.query(sql,value).then((result)=>{
     res.json(result.rows);
