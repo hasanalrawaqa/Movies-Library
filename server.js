@@ -7,7 +7,7 @@ const username = process.env.username;
 const password = process.env.password;
 const bodyParser = require("body-parser");
 const { Client } = require("pg");
-let url = `postgres://${username}:${password}@localhost:5432/movie_data_base`;
+let url = process.env.dburl;
 // I put my sudo username and password in .env file
 const client = new Client(url);
 const app = express();
